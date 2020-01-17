@@ -1,0 +1,37 @@
+application: rssf
+runtime: python27
+api_version: 1
+version: 1
+threadsafe: True
+
+
+handlers:
+
+- url: /css
+  static_dir: templates/css
+
+- url: /js
+  static_dir: templates/js
+
+- url: /images
+  static_dir: templates/images
+
+- url: /fonts
+  static_dir: templates/fonts
+
+- url: /vendor
+  static_dir: templates/vendor
+
+- url: /src
+  static_dir: templates/src
+
+- url: /telas
+  static_dir: templates/telas/*.html
+
+- url: /.*
+  script: main.app
+
+libraries:
+
+- name: jinja2
+  version: latest

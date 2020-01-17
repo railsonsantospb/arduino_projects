@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<meta name="viewport" content="width=device-width, user-scalable=no" />
+<title>Chart JS - Graficos em JavaScript com legendas</title>
+<link href="../css/demo.css" rel="stylesheet" type="text/css">
+<script src="../vendor/Chart.js"></script>
+<script type="text/javascript" src="../js/canvasjs.js"></script>
+<script src="../src/legend.js"></script>
+</head>
+<script>
+
+if(!!(window.addEventListener)) window.addEventListener('DOMContentLoaded', main);
+else window.attachEvent('onload', main);
+
+function main() {
+    lineChart1();
+    realtime1();
+    realtime2();
+}
+
+lineChart1 = function () {
+		var chart = new CanvasJS.Chart("lineChart1",
+		{
+			title:{
+				text: "Consumo mensal do Ar-Condicionado {{sala}}"
+			},
+                        animationEnabled: true,
+			axisY:{
+				title: "Precipitation (inches)",
+				includeZero: false
+			},
+			axisX: {
+				title: "Meses",
+				interval: 1
+			},
+			toolTip: {
+				shared: true,
+				content: function(e){
+					var body = new String;
+					var head ;
+					for (var i = 0; i < e.entries.length; i++){
+						var  str = "<span style= 'color:"+e.entries[i].dataSeries.color + "'> " + e.entries[i].dataSeries.name + "</span>: <strong>"+  e.entries[i].dataPoint.y + "</strong>'' <br/>" ;
+						body = body.concat(str);
+					}
+					head = "<span style = 'color:DodgerBlue; '><strong>"+ (e.entries[0].dataPoint.label) + "</strong></span><br/>";
+
+					return (head.concat(body));
+				}
+			},
+			legend: {
+				horizontalAlign :"center"
+			},
+			data: [
+			{
+				type: "spline",
+				showInLegend: true,
+				name: "Boston",
+				dataPoints: [
+				{label: "Jan" , y: 3.92} ,
+				{label: "Feb" , y: 3.31} ,
+				{label: "Mar" , y: 3.85} ,
+				{label: "Apr" , y: 3.60} ,
+				{label: "May" , y: 3.24} ,
+				{label: "Jun" , y: 3.22} ,
+				{label: "Jul" , y: 3.06} ,
+				{label: "Aug" , y: 3.37} ,
+				{label: "Sep" , y: 3.47} ,
+				{label: "Oct" , y: 3.79} ,
+				{label: "Nov" , y: 3.98} ,
+				{label: "Dec" , y: 3.73}
+				]
+			},
+			{
+				type: "spline",
+				showInLegend: true,
+				name: "Atlanta",
+				dataPoints: [
+				{label: "Jan" , y: 4.72} ,
+				{label: "Feb" , y: 4.15} ,
+				{label: "Mar" , y: 3.4} ,
+				{label: "Apr" , y: 1.25} ,
+				{label: "May" , y: .54} ,
+				{label: "Jun" , y: 0.13} ,
+				{label: "Jul" , y: 0.04} ,
+				{label: "Aug" , y: 0.09} ,
+				{label: "Sep" , y: 0.28} ,
+				{label: "Oct" , y: 1.19} ,
+				{label: "Nov" , y: 3.31} ,
+				{label: "Dec" , y: 3.18}
+				]
+			},
+			{
+				type: "spline",
+				showInLegend: true,
+				name: "Austin",
+				dataPoints: [
+				{label: "Jan" , y: 1.89} ,
+				{label: "Feb" , y: 1.99} ,
+				{label: "Mar" , y: 2.14} ,
+				{label: "Apr" , y: 2.51} ,
+				{label: "May" , y: 5.03} ,
+				{label: "Jun" , y: 3.81} ,
+				{label: "Jul" , y: 1.97} ,
+				{label: "Aug" , y: 2.31} ,
+				{label: "Sep" , y: 2.91} ,
+				{label: "Oct" , y: 3.97} ,
+				{label: "Nov" , y: 2.68} ,
+				{label: "Dec" , y: 2.44}
+				]
+			}
+			],
+          legend :{
+            cursor:"pointer",
+            itemclick : function(e) {
+              if (typeof(e.dataSeries.visible) === "undefined" || e.dataSeries.visible) {
+				e.dataSeries.visible = false;
+              }
+              else{
+				e.dataSeries.visible = true;
+              }
+              chart.render();
+            }
+          }
+
+		});
+
+    chart.render();
+}
+
+
+ realtime1 = function () {
+
+		//initial value of dataPoints
+		var dps = [
+		{label: "Temperatura", y: 50},
+		{label: "boiler2", y: 50}
+		];
+        var text = ["Temperatura (°C)","Humidade(%)"]
+		var chart = new CanvasJS.Chart("chartContainer1",{
+			title: {
+				text: "Dados em Tempo Real"
+			},
+			axisY: {
+				suffix: " C"
+			},
+			legend :{
+				verticalAlign: 'bottom',
+				horizontalAlign: "center"
+			},
+			data: [
+			{
+				type: "column",
+				bevelEnabled: true,
+				indexLabel: "{y}",
+				dataPoints: dps
+			}
+			]
+		});
+
+
+		var updateInterval = 1000;
+
+
+		var updateChart = function () {
+
+			for (var i = 0; i < dps.length; i++) {
+
+				// generating random variation deltaY
+				var deltaY = Math.round(2 + Math.random() *(-2-2));
+				var yVal = deltaY + dps[i].y > 0 ? dps[i].y + deltaY : 0;
+				var boilerColor;
+
+
+				// color of dataPoint dependent upon y value.
+
+				boilerColor =
+				yVal > 50 ? "#FF2500":
+				yVal >= 50 ? "#FF6000":
+				yVal < 60 ? "#6B8E23 ":
+				null;
+
+
+				// updating the dataPoint
+				dps[i] = {label: text[i]+" ", y: yVal, color: boilerColor};
+
+			};
+
+			chart.render();
+		};
+
+		updateChart();
+
+		// update chart after specified interval
+		setInterval(function(){updateChart()}, updateInterval);
+
+
+	}
+
+
+</script>
+<body>
+<center><h1>Visualização Grafica do Ar-Condicionado</h1></center>
+<center>
+    <h2>Sala {{sala}}</h2>
+    <a href="/Ar_1" style="margin-right: 10px; font-size:14px;font-family:'Roboto',Arial,Helvetica,sans-serif;color:#34495E;max-width:480px;min-width:150px">Atualizar</a>
+</center>
+<div style="margin-top: -100px">
+    <canvas id="realtime1"></canvas>
+    <center><div id="chartContainer1" style="height: 400px; width: 60%;"></div></center>
+</div>
+
+<center>
+<center style="margin-top: 150px">
+    <a href="/Ar_1" style="margin-right: 10px; font-size:14px;font-family:'Roboto',Arial,Helvetica,sans-serif;color:#34495E;max-width:480px;min-width:150px">Atualizar</a>
+</center>
+<div  style="margin-top: -450px">
+    <div id="lineChart1" style="height: 400px; width: 60%; margin-top: 500px">
+	</div>
+</div>
+</center>
+
+</body>
+</html>
